@@ -190,8 +190,8 @@ export default function CodeEditor({ value, onChange, readOnly = false, height =
           {Array.from({ length: lineCount }, (_, i) => (
             <div
               key={i}
-              className={`flex items-center justify-end pr-2 text-xs ${activeLine === i + 1 ? 'text-accent' : ''}`}
-              style={{ height: '1.6em' }}
+              className={`flex items-center justify-end pr-2 text-[11px] ${activeLine === i + 1 ? 'text-accent' : ''}`}
+              style={{ height: `${13 * 1.6}px` }}
             >
               {i + 1}
             </div>
