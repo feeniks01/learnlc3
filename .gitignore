@@ -39,3 +39,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# screenshots / images
+*.png
+
+# markdown (except README)
+*.md
+!README.md
+
+# playwright
+.playwright-mcp/
