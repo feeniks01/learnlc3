@@ -8,7 +8,7 @@ export default function SimulatorPage() {
     <div className="flex h-screen">
       <Sidebar />
       <main className="flex-1 overflow-hidden">
-        <SimulatorPanel storageKey="simulator" />
+        <SimulatorPanel storageKey="simulator" projectStyle />
       </main>
     </div>
   );

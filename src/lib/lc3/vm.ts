@@ -75,6 +75,13 @@ export class LC3VM {
     }
   }
 
+  /** Load code into memory without changing PC (for secondary files). */
+  loadAt(origin: number, machineCode: number[]) {
+    for (let i = 0; i < machineCode.length; i++) {
+      this.memory[origin + i] = machineCode[i] & 0xFFFF;
+    }
+  }
+
   getStats(): VMStats {
     return {
       instructionsExecuted: this.instructionsExecuted,
