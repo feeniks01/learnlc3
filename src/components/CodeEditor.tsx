@@ -185,12 +185,12 @@ export default function CodeEditor({ value, onChange, readOnly = false, height =
       {showLineNumbers && (
         <div
           ref={lineNumbersRef}
-          className="flex-shrink-0 w-8 overflow-hidden select-none text-text-dimmer bg-surface border-r border-border pt-2"
+          className="flex-shrink-0 w-10 overflow-hidden select-none text-text-dimmer bg-surface border-r border-border pt-2"
         >
           {Array.from({ length: lineCount }, (_, i) => (
             <div
               key={i}
-              className={`flex items-center justify-center text-[11px] ${activeLine === i + 1 ? 'text-accent' : ''}`}
+              className={`flex items-center justify-end pr-2 text-xs ${activeLine === i + 1 ? 'text-accent' : ''}`}
               style={{ height: '1.6em' }}
             >
               {i + 1}

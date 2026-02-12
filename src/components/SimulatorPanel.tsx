@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { LC3VM, assemble } from '@/lib/lc3';
-import { getSavedCode, saveCode } from '@/lib/storage';
+import { getSavedCode, saveCode, getSavedPrograms, saveProgram, deleteProgram, type SavedProgram } from '@/lib/storage';
 import CodeEditor from './CodeEditor';
 
 interface SimulatorPanelProps {
@@ -67,6 +67,50 @@ HALT
   const [tab, setTab] = useState<'registers' | 'memory' | 'console' | 'stats'>('registers');
   const sourceMapRef = useRef<Map<number, number>>(new Map());
   const originRef = useRef(0x3000);
+  const [savedPrograms, setSavedPrograms] = useState<SavedProgram[]>([]);
+  const [showSaveMenu, setShowSaveMenu] = useState(false);
+  const [saveName, setSaveName] = useState('');
+  const saveMenuRef = useRef<HTMLDivElement>(null);
+
+  // Load saved programs list
+  useEffect(() => {
+    setSavedPrograms(getSavedPrograms());
+  }, []);
+
+  // Close save menu on outside click
+  useEffect(() => {
+    if (!showSaveMenu) return;
+    const handler = (e: MouseEvent) => {
+      if (saveMenuRef.current && !saveMenuRef.current.contains(e.target as Node)) {
+        setShowSaveMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [showSaveMenu]);
+
+  const handleSaveProgram = useCallback(() => {
+    const name = saveName.trim();
+    if (!name) return;
+    saveProgram(name, code);
+    setSavedPrograms(getSavedPrograms());
+    setSaveName('');
+    setShowSaveMenu(false);
+  }, [saveName, code]);
+
+  const handleLoadProgram = useCallback((program: SavedProgram) => {
+    setCode(program.code);
+    setShowSaveMenu(false);
+    setAssembled(false);
+    setErrors([]);
+    setActiveLine(null);
+  }, []);
+
+  const handleDeleteProgram = useCallback((name: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    deleteProgram(name);
+    setSavedPrograms(getSavedPrograms());
+  }, []);
 
   // Auto-save code with debounce
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -250,6 +294,85 @@ HALT
         >
           Reset
         </button>
+
+        <div className="w-px h-5 bg-border mx-1" />
+
+        {/* Save/Load dropdown */}
+        <div className="relative" ref={saveMenuRef}>
+          <button
+            onClick={() => setShowSaveMenu(!showSaveMenu)}
+            className="px-3 py-1 text-xs font-medium bg-surface-2 text-text-dim hover:text-text border border-border rounded transition-colors flex items-center gap-1.5"
+          >
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M13 13H3a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h7l3 3v6a1 1 0 0 1-1 1z" />
+              <path d="M5 3v4h4" />
+              <path d="M10 13V9H5" />
+            </svg>
+            Programs
+            <svg width="8" height="8" viewBox="0 0 8 8" fill="none" className={`transition-transform ${showSaveMenu ? 'rotate-180' : ''}`}>
+              <path d="M2 3L4 5L6 3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+
+          {showSaveMenu && (
+            <div className="absolute left-0 top-full mt-1 w-64 bg-surface border border-border rounded shadow-xl z-30">
+              {/* Save input */}
+              <div className="p-2 border-b border-border">
+                <div className="text-[10px] uppercase tracking-widest text-text-dimmer mb-1.5">Save current program</div>
+                <div className="flex gap-1">
+                  <input
+                    type="text"
+                    className="flex-1 px-2 py-1 text-xs bg-surface-2 border border-border rounded text-text placeholder:text-text-dimmer"
+                    placeholder="Program name..."
+                    value={saveName}
+                    onChange={e => setSaveName(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && handleSaveProgram()}
+                    autoFocus
+                  />
+                  <button
+                    onClick={handleSaveProgram}
+                    disabled={!saveName.trim()}
+                    className="px-2.5 py-1 text-xs font-medium bg-accent text-white rounded transition-colors disabled:opacity-40"
+                  >
+                    Save
+                  </button>
+                </div>
+              </div>
+
+              {/* Saved programs list */}
+              <div className="max-h-48 overflow-y-auto">
+                {savedPrograms.length === 0 ? (
+                  <div className="px-3 py-3 text-xs text-text-dimmer text-center">No saved programs yet</div>
+                ) : (
+                  savedPrograms.map(p => (
+                    <button
+                      key={p.name}
+                      onClick={() => handleLoadProgram(p)}
+                      className="w-full flex items-center justify-between px-3 py-2 text-left hover:bg-surface-2 transition-colors group"
+                    >
+                      <div className="min-w-0">
+                        <div className="text-xs text-text truncate">{p.name}</div>
+                        <div className="text-[10px] text-text-dimmer">
+                          {new Date(p.savedAt).toLocaleDateString()}
+                        </div>
+                      </div>
+                      <button
+                        onClick={(e) => handleDeleteProgram(p.name, e)}
+                        className="ml-2 p-1 text-text-dimmer hover:text-error opacity-0 group-hover:opacity-100 transition-all"
+                        title="Delete program"
+                      >
+                        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+                          <path d="M2 2L8 8M8 2L2 8" />
+                        </svg>
+                      </button>
+                    </button>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
         <div className="flex-1" />
         {assembled && (
           <span className="text-[11px] text-text-dimmer">

@@ -58,6 +58,35 @@ export function saveSimulatorCode(code: string): void {
   set('simulator_code', code);
 }
 
+// ── Saved programs ────────────────────────────────
+
+export interface SavedProgram {
+  name: string;
+  code: string;
+  savedAt: number;
+}
+
+export function getSavedPrograms(): SavedProgram[] {
+  return get<SavedProgram[]>('saved_programs', []);
+}
+
+export function saveProgram(name: string, code: string): void {
+  const programs = getSavedPrograms();
+  const idx = programs.findIndex(p => p.name === name);
+  const entry: SavedProgram = { name, code, savedAt: Date.now() };
+  if (idx >= 0) {
+    programs[idx] = entry;
+  } else {
+    programs.push(entry);
+  }
+  set('saved_programs', programs);
+}
+
+export function deleteProgram(name: string): void {
+  const programs = getSavedPrograms().filter(p => p.name !== name);
+  set('saved_programs', programs);
+}
+
 // ── Project test results ───────────────────────────
 
 export function getProjectPassed(id: string): boolean {
