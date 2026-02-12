@@ -1,0 +1,141 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-bg: #0a0a0a;
+  --color-surface: #111111;
+  --color-surface-2: #1a1a1a;
+  --color-border: #222222;
+  --color-border-light: #2a2a2a;
+  --color-text: #e0e0e0;
+  --color-text-dim: #888888;
+  --color-text-dimmer: #555555;
+  --color-accent: #3b82f6;
+  --color-accent-dim: #2563eb;
+  --color-success: #22c55e;
+  --color-error: #ef4444;
+  --color-warning: #eab308;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', Menlo, monospace;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #2a2a2a transparent;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+}
+
+/* Code editor textarea — text is transparent; the syntax overlay provides visible text */
+.code-editor {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.6;
+  tab-size: 4;
+  resize: none;
+  background: transparent;
+  color: transparent;
+  caret-color: var(--color-accent);
+  margin: 0;
+  padding: 0;
+  border: none;
+  white-space: pre;
+  overflow-wrap: normal;
+  word-wrap: normal;
+}
+
+.code-editor:focus {
+  outline: none;
+}
+
+.code-editor::selection {
+  background: #264f78;
+}
+
+/* Syntax highlighting overlay */
+.syntax-keyword { color: #c586c0; }
+.syntax-register { color: #9cdcfe; }
+.syntax-number { color: #b5cea8; }
+.syntax-label { color: #dcdcaa; }
+.syntax-directive { color: #569cd6; }
+.syntax-comment { color: #6a9955; }
+.syntax-string { color: #ce9178; }
+.syntax-trap { color: #4ec9b0; }
+
+/* Memory/register highlight animation */
+@keyframes flash-change {
+  0% { background-color: rgba(59, 130, 246, 0.3); }
+  100% { background-color: transparent; }
+}
+
+.register-changed {
+  animation: flash-change 1s ease-out;
+}
+
+/* Lesson content styling */
+.lesson-content h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  color: var(--color-text);
+}
+
+.lesson-content p {
+  margin-bottom: 0.75rem;
+  line-height: 1.7;
+  color: var(--color-text-dim);
+}
+
+.lesson-content code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--color-surface-2);
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  color: var(--color-accent);
+}
+
+.lesson-content pre {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  padding: 1rem;
+  margin: 1rem 0;
+  overflow-x: auto;
+  line-height: 1.6;
+}
+
+.lesson-content ul, .lesson-content ol {
+  margin-bottom: 0.75rem;
+  padding-left: 1.5rem;
+  color: var(--color-text-dim);
+  line-height: 1.7;
+}
+
+.lesson-content li {
+  margin-bottom: 0.25rem;
+}
+
+.lesson-content strong {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+/* AI Assistant glass effect */
+.ai-glass-panel {
+  background: rgba(17, 17, 17, 0.75);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+  overflow: hidden;
+}
