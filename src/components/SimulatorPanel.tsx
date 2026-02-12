@@ -747,22 +747,22 @@ export default function SimulatorPanel({ initialCode, storageKey, input, onOutpu
         /* Project-style layout: line numbers gutter + toolbar + editor + right panel */
         <div className="flex flex-1 overflow-hidden min-h-0">
           {/* Line numbers gutter — matches project page */}
-          <div className="flex-shrink-0 w-8 bg-surface border-r border-border flex flex-col">
+          <div className="flex-shrink-0 w-10 bg-surface border-r border-border flex flex-col">
             <div className="px-3 py-1.5 border-b border-border flex-shrink-0">
               <div className="py-1 text-[11px] leading-normal invisible">&nbsp;</div>
             </div>
             {/* Spacer for file tab bar */}
-            {files.length > 1 && <div className="border-b border-border" style={{ height: '30px' }} />}
+            <div className="border-b border-border" style={{ height: '30px' }} />
             <div
               ref={lineNumRef}
-              className="flex-1 overflow-hidden font-mono text-[13px] leading-[1.6] select-none text-text-dimmer overflow-y-auto"
-              style={{ paddingTop: '1rem' }}
+              className="flex-1 overflow-hidden font-mono text-[13px] select-none text-text-dimmer overflow-y-auto"
+              style={{ paddingTop: '1rem', lineHeight: 1.6 }}
             >
               {Array.from({ length: lineCount }, (_, i) => (
                 <div
                   key={i}
                   className={`flex items-center justify-center ${activeLine === i + 1 ? 'text-accent' : ''}`}
-                  style={{ height: '1.6em' }}
+                  style={{ height: `${13 * 1.6}px` }}
                 >
                   <span className="text-[11px]">{i + 1}</span>
                 </div>
@@ -787,7 +787,7 @@ export default function SimulatorPanel({ initialCode, storageKey, input, onOutpu
 
             <div className="flex flex-1 overflow-hidden min-h-0">
               <div className="flex-1 flex flex-col overflow-hidden border-r border-border min-w-0">
-                {files.length > 1 && fileTabBar}
+                {fileTabBar}
                 <div className="flex-1 overflow-hidden">
                   <CodeEditor
                     value={code}
@@ -819,7 +819,7 @@ export default function SimulatorPanel({ initialCode, storageKey, input, onOutpu
 
           <div className="flex flex-1 overflow-hidden">
             <div className="flex-1 flex flex-col overflow-hidden border-r border-border">
-              {files.length > 1 && fileTabBar}
+              {fileTabBar}
               <div className="flex-1 overflow-hidden">
                 <CodeEditor
                   value={code}
