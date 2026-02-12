@@ -586,12 +586,9 @@ LD and ST use a 9-bit offset, giving a range of only -256 to +255 from the PC. W
 
 The LC-3 provides two solutions: **base+offset** and **indirect** addressing.
 
-## LDR and STR — Base+Offset
+## LDR — Load Base+Offset
 
-\`LDR DR, BaseR, #offset6\` — Load from \`memory[BaseR + offset]\`
-\`STR SR, BaseR, #offset6\` — Store to \`memory[BaseR + offset]\`
-
-The base register holds a full 16-bit address, so you can reach **any** memory location. The 6-bit offset gives a range of -32 to +31 from the base.`
+\`LDR DR, BaseR, #offset6\` loads the value at \`memory[BaseR + offset]\` into DR. The base register holds a full 16-bit address, so you can reach **any** memory location. The 6-bit offset gives a range of -32 to +31 from the base.`
       },
       {
         type: 'code',
@@ -610,13 +607,29 @@ ARRAY .FILL #10
       },
       {
         type: 'text',
-        content: `## LDI and STI — Indirect Addressing
+        content: `## STR — Store Base+Offset
 
-\`LDI DR, LABEL\` — The value at LABEL is treated as an **address**, and the data at *that* address is loaded into DR. It's a double dereference: \`DR = memory[memory[LABEL]]\`.
+\`STR SR, BaseR, #offset6\` writes the value in SR **to** \`memory[BaseR + offset]\`.`
+      },
+      {
+        type: 'code',
+        code: `.ORIG x3000
+LEA R1, DATA       ; R1 = address of DATA
+AND R0, R0, #0
+ADD R0, R0, #5
+STR R0, R1, #0     ; memory[DATA + 0] = 5
+ADD R0, R0, #3
+STR R0, R1, #1     ; memory[DATA + 1] = 8
+HALT
+DATA .FILL #0
+     .FILL #0
+.END`
+      },
+      {
+        type: 'text',
+        content: `## LDI — Load Indirect
 
-\`STI SR, LABEL\` — Similarly, stores SR to the address pointed to by the value at LABEL.
-
-Think of it as following a pointer.`
+\`LDI DR, LABEL\` loads the value at the address **pointed to** by LABEL into DR. It's a double dereference: \`DR = memory[memory[LABEL]]\`.`
       },
       {
         type: 'code',
@@ -624,6 +637,22 @@ Think of it as following a pointer.`
 LDI R0, PTR     ; R0 = memory[memory[PTR]] = memory[x4000]
 HALT
 PTR .FILL x4000  ; PTR contains the address x4000
+.END`
+      },
+      {
+        type: 'text',
+        content: `## STI — Store Indirect
+
+\`STI SR, LABEL\` stores the value in SR to the address **pointed to** by LABEL. It follows the pointer at LABEL and writes there: \`memory[memory[LABEL]] = SR\`.`
+      },
+      {
+        type: 'code',
+        code: `.ORIG x3000
+AND R0, R0, #0
+ADD R0, R0, #7
+STI R0, PTR      ; memory[memory[PTR]] = memory[x4000] = 7
+HALT
+PTR .FILL x4000   ; PTR contains the address x4000
 .END`
       },
       {
